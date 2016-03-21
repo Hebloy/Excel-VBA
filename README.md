@@ -1,3 +1,4 @@
-# Hello-World
+# Excel administrative utilities
 
-Testing github first time.
+This repository stores useful administrative MS excel scripts
+Most of these scripts are built on excel 2010
