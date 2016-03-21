@@ -1,5 +1,5 @@
 ' Get Webpage Title from URL
-' URL should be on the left of the ActiveCell
+' URL should be on the left of the ActiveCell in MS Excel 2010
 ' It will run till the left cell is ""
 
 Sub GetTitle()
