@@ -1,0 +1,21 @@
+' Get Webpage Title from URL
+' URL should be on the left of the ActiveCell
+' It will run till the left cell is ""
+
+Sub GetTitle()
+    Dim ie As Object
+    Set ie = CreateObject("InternetExplorer.Application")
+    
+    While ActiveCell.Offset(0, -1).Value <> ""
+        ie.Navigate ActiveCell.Offset(0, -1).Value
+        Do Until ie.ReadyState = 4
+            DoEvents
+        Loop
+        
+        ActiveCell.Value = ie.Document.Title
+        ActiveCell.Offset(1, 0).Select
+    Wend
+    
+    ie.Quit
+    Set ie = Nothing
+End Sub
