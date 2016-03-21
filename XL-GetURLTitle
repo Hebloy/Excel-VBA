@@ -1,13 +1,16 @@
+Sub GetTitle()
 ' Get Webpage Title from URL
 ' URL should be on the left of the ActiveCell in MS Excel 2010
 ' It will run till the left cell is ""
-
-Sub GetTitle()
+    
     Dim ie As Object
+    Dim cURL As String ' Static/common part of URL
+    
+    cURL = Cells(1, "G").Value
     Set ie = CreateObject("InternetExplorer.Application")
     
     While ActiveCell.Offset(0, -1).Value <> ""
-        ie.Navigate ActiveCell.Offset(0, -1).Value
+        ie.Navigate cURL & ActiveCell.Offset(0, -1).Value
         Do Until ie.ReadyState = 4
             DoEvents
         Loop
