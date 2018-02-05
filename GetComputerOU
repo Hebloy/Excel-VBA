@@ -1,6 +1,48 @@
-Function GetComputerOU(ComputerName) As String
-    Set objADSysInfo = CreateObject("ADSystemInfo")
-    strComputerName = objADSysInfo.ComputerName
-    Set objComputer = GetObject("LDAP://" & strComputerName)
-    GetComputerOU = objComputer.DistinguishedName
+Option Explicit
+Dim objNetwork
+Dim computerName
+Dim ou
+
+Function getOUByComputerName(ByVal computerName)
+    ' *** Function to find ou/container of computer object from computer name ***
+    
+    Dim namingContext, ldapFilter, ou
+    Dim cn, cmd, rs
+    Dim objRootDSE
+    
+    ' Bind to the RootDSE to get the default naming context for
+    ' the domain.  e.g. dc=wisesoft,dc=co,dc=uk
+    Set objRootDSE = GetObject("LDAP://RootDSE")
+    namingContext = objRootDSE.GET("defaultNamingContext")
+    Set objRootDSE = Nothing
+
+    ' Construct an ldap filter to search for a computer object
+    ' anywhere in the domain with a name of the value specified.
+    ldapFilter = "<LDAP://" & namingContext & _
+    ">;(&(objectCategory=Computer)(name=" & computerName & "))" & _
+    ";distinguishedName;subtree"
+
+    ' Standard ADO code to query database
+    Set cn = CreateObject("ADODB.Connection")
+    Set cmd = CreateObject("ADODB.Command")
+
+    cn.Open "Provider=ADsDSOObject;"
+    cmd.activeconnection = cn
+    cmd.CommandText = ldapFilter
+    
+    Set rs = cmd.Execute
+
+    If rs.EOF <> True And rs.bof <> True Then
+        ou = rs(0)
+        ' Convert distinguished name into OU.
+        ' e.g. cn=CLIENT01,OU=WiseSoft_Computers,dc=wisesoft,dc=co,dc=uk
+        ' to: OU=WiseSoft_Computers,dc=wisesoft,dc=co,dc=uk
+        ou = Mid(ou, InStr(ou, ",") + 1, Len(ou) - InStr(ou, ","))
+        getOUByComputerName = ou
+
+    End If
+
+    rs.Close
+    cn.Close
+
 End Function
