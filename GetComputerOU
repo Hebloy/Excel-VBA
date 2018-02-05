@@ -1,0 +1,6 @@
+Function GetComputerOU(ComputerName) As String
+    Set objADSysInfo = CreateObject("ADSystemInfo")
+    strComputerName = objADSysInfo.ComputerName
+    Set objComputer = GetObject("LDAP://" & strComputerName)
+    GetComputerOU = objComputer.DistinguishedName
+End Function
