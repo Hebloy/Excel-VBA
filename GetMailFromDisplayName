@@ -1,0 +1,24 @@
+Option Explicit
+
+Function ResolveDisplayNameToSMTP(name As String) As String
+    Dim oRecip As Outlook.Recipient
+    Dim oEU As Outlook.ExchangeUser
+    Dim oEDL As Outlook.ExchangeDistributionList
+    
+    Set oRecip = Outlook.Session.CreateRecipient(name)
+    oRecip.Resolve
+    If oRecip.Resolved Then
+        Select Case oRecip.AddressEntry.AddressEntryUserType
+            Case OlAddressEntryUserType.olExchangeUserAddressEntry
+                Set oEU = oRecip.AddressEntry.GetExchangeUser
+                If Not (oEU Is Nothing) Then
+                    ResolveDisplayNameToSMTP = oEU.PrimarySmtpAddress
+                End If
+            Case OlAddressEntryUserType.olExchangeDistributionListAddressEntry
+                Set oEDL = oRecip.AddressEntry.GetExchangeDistributionList
+                If Not (oEDL Is Nothing) Then
+                    ResolveDisplayNameToSMTP = oEDL.PrimarySmtpAddress
+                End If
+        End Select
+    End If
+End Function
